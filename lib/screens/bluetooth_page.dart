@@ -13,14 +13,12 @@ class BluetoothPage extends StatefulWidget {
 class _BluetoothPageState extends State<BluetoothPage> {
   final List<BluetoothDevice> deviceList =
       List<BluetoothDevice>.empty(growable: true);
-  bool isScanning = true;
   @override
   void initState() {
     super.initState();
-    _scanState();
-    FlutterBluePlus.startScan(timeout: const Duration(seconds: 5))
-        .whenComplete(_scanState);
+    _isScanning();
     List<BluetoothDevice> devices = FlutterBluePlus.connectedDevices;
+    _getConnectedDevices(FlutterBluePlus.systemDevices);
     for (BluetoothDevice device in devices) {
       _addBluetoothDevice(device);
     }
@@ -31,14 +29,20 @@ class _BluetoothPageState extends State<BluetoothPage> {
     });
   }
 
-  _scanState() {
-    print("scan function called");
-    setState(() {
-      if (FlutterBluePlus.isScanningNow) {
-        isScanning = true;
-      } else {
-        isScanning = false;
-      }
+  _getConnectedDevices(Future<List<BluetoothDevice>> devices) async {
+    List list = await devices;
+    for (var val in list) {
+      _addBluetoothDevice(val);
+    }
+  }
+
+  _isScanning() async {
+    print(await FlutterBluePlus.adapterName);
+    await FlutterBluePlus.turnOn(timeout: 5);
+    FlutterBluePlus.startScan(timeout: const Duration(seconds: 15))
+        .whenComplete(() async {
+      await Future.delayed(const Duration(seconds: 15));
+      setState(() {});
     });
   }
 
@@ -52,7 +56,16 @@ class _BluetoothPageState extends State<BluetoothPage> {
 
   _connectionState(BluetoothDevice device) {
     Widget widget = ElevatedButton(
-      onPressed: () => _connectDevice(device),
+      onPressed: () async {
+        try {
+          await device.connect().whenComplete(() {
+            setState(() {});
+          });
+          print("Connection successful");
+        } on FlutterBluePlusException catch (error) {
+          print(error.description);
+        }
+      },
       child: const Text("Connect"),
     );
     device.connectionState.listen((BluetoothConnectionState state) {
@@ -76,9 +89,15 @@ class _BluetoothPageState extends State<BluetoothPage> {
   _connectDevice(BluetoothDevice device) async {
     try {
       await device.connect();
+      setState(() {});
     } on FlutterBluePlusException catch (e) {
       print(e.description);
     }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -95,55 +114,82 @@ class _BluetoothPageState extends State<BluetoothPage> {
           onPressed: () => Navigator.pop(context),
           icon: const Icon(Icons.arrow_back_ios),
         ),
-      ),
-      body: Container(
-        color: Colors.white,
-        child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              alignment: Alignment.centerLeft,
-              child: AutoSizeText(
-                "Bluetooth devices",
-                style: const TextStyle().copyWith(
-                  color: Colors.grey.shade600,
+        actions: <Widget>[
+          (FlutterBluePlus.isScanningNow)
+              ? TextButton(
+                  onPressed: () {
+                    FlutterBluePlus.stopScan();
+                    setState(() {});
+                  },
+                  child: Text(
+                    "Stop",
+                    style: const TextStyle().copyWith(
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                )
+              : TextButton(
+                  onPressed: _isScanning,
+                  child: Text(
+                    "Scan",
+                    style: const TextStyle().copyWith(
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
                 ),
-                minFontSize: 15,
-                maxFontSize: 20,
+        ],
+      ),
+      body: RefreshIndicator.adaptive(
+        onRefresh: () async {
+          _isScanning();
+          return Future.delayed(const Duration(milliseconds: 500));
+        },
+        child: Container(
+          color: Colors.white,
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                alignment: Alignment.centerLeft,
+                child: AutoSizeText(
+                  "Bluetooth devices",
+                  style: const TextStyle().copyWith(
+                    color: Colors.grey.shade600,
+                  ),
+                  minFontSize: 15,
+                  maxFontSize: 20,
+                ),
               ),
-            ),
-            Expanded(
-              child: ListView.builder(
-                scrollDirection: Axis.vertical,
-                itemCount: deviceList.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: AutoSizeText(
-                      //title medium
-                      deviceList[index].advName == ''
-                          ? "Unknown device"
-                          : deviceList[index].advName,
-                      maxLines: 1,
-                      minFontSize: 15,
-                      maxFontSize: 20,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    subtitle: AutoSizeText(
-                      deviceList[index].id.toString(),
-                      maxLines: 1,
-                      minFontSize: 5,
-                      maxFontSize: 15,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    trailing: _connectionState(deviceList[index]),
-                  );
-                },
+              Expanded(
+                child: ListView.builder(
+                  scrollDirection: Axis.vertical,
+                  itemCount: deviceList.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: AutoSizeText(
+                        //title medium
+                        deviceList[index].advName == ''
+                            ? "Unknown device"
+                            : deviceList[index].advName,
+                        maxLines: 1,
+                        minFontSize: 15,
+                        maxFontSize: 20,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      subtitle: AutoSizeText(
+                        deviceList[index].remoteId.toString(),
+                        maxLines: 1,
+                        minFontSize: 5,
+                        maxFontSize: 15,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      trailing: _connectionState(deviceList[index]),
+                    );
+                  },
+                ),
               ),
-            ),
-            (isScanning)
-                ? const CircularProgressIndicator.adaptive()
-                : Container(),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:green_vault/screens/bluetooth_page.dart';
 import 'package:green_vault/screens/info_sheet.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class MyHome extends StatefulWidget {
   const MyHome({super.key});

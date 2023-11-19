@@ -22,7 +22,7 @@ class _InfoCardState extends State<InfoCard> {
   @override
   Widget build(BuildContext context) {
     final width = 0.9 * widget.width;
-    // final height = widget.height;
+    final height = widget.height;
     final ratio = (widget.fill / 20) > 1 ? 1 : (widget.fill / 20);
     final fill = ratio * width;
     return Container(
@@ -48,7 +48,14 @@ class _InfoCardState extends State<InfoCard> {
             ),
             child: Column(
               children: [
-                Text(widget.type),
+                SizedBox(
+                  height: height * 0.25,
+                  child: AutoSizeText(
+                    widget.type,
+                    minFontSize: 5,
+                    maxLines: 1,
+                  ),
+                ),
                 const Spacer(),
                 Stack(
                   children: [

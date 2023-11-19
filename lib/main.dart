@@ -47,6 +47,11 @@ class _MyAppState extends State<MyApp> {
               GoogleFonts.merriweather(backgroundColor: Colors.orange),
           headlineSmall: GoogleFonts.merriweather(backgroundColor: Colors.red),
         ),
+        textButtonTheme: const TextButtonThemeData(
+          style: ButtonStyle(
+            foregroundColor: MaterialStatePropertyAll(Colors.black),
+          ),
+        ),
       ),
       debugShowCheckedModeBanner: false,
       home: AnimatedSplashScreen(
