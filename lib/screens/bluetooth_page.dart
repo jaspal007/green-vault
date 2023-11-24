@@ -1,7 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class BluetoothPage extends StatefulWidget {
   const BluetoothPage({super.key});
@@ -37,7 +36,7 @@ class _BluetoothPageState extends State<BluetoothPage> {
   }
 
   _isScanning() async {
-    print(await FlutterBluePlus.adapterName);
+    // print(await FlutterBluePlus.adapterName);
     await FlutterBluePlus.turnOn(timeout: 5);
     FlutterBluePlus.startScan(timeout: const Duration(seconds: 15))
         .whenComplete(() async {

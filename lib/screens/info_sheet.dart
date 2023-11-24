@@ -12,7 +12,7 @@ class InfoSheet extends StatelessWidget {
     print(width);
     return Container(
       width: width,
-      height: 0.8 * height,
+      height: (height <= 500) ? 0.7 * height : 0.8 * height,
       decoration: const BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.only(
@@ -40,35 +40,37 @@ class InfoSheet extends StatelessWidget {
           ),
         ],
       ),
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            children: [
-              SizedBox(
-                height: 0.3 * height,
-                width: 0.8 * width,
-                child: InfoCard(
-                  type: "Wet Waste",
+      child: SingleChildScrollView(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: [
+                SizedBox(
                   height: 0.3 * height,
                   width: 0.8 * width,
-                  fill: 5,
+                  child: InfoCard(
+                    type: "Wet Waste",
+                    height: 0.3 * height,
+                    width: 0.8 * width,
+                    fill: 5,
+                  ),
                 ),
-              ),
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 16),
-              ),
-              SizedBox(
-                height: 0.3 * height,
-                width: 0.8 * width,
-                child: InfoCard(
-                  type: "Dry Waste",
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 16),
+                ),
+                SizedBox(
                   height: 0.3 * height,
                   width: 0.8 * width,
-                  fill: 17,
+                  child: InfoCard(
+                    type: "Dry Waste",
+                    height: 0.3 * height,
+                    width: 0.8 * width,
+                    fill: 17,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

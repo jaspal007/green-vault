@@ -1,7 +1,8 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:green_vault/screens/bluetooth_page.dart';
 import 'package:green_vault/screens/info_sheet.dart';
+import 'package:green_vault/screens/wifi_page.dart';
 
 class MyHome extends StatefulWidget {
   const MyHome({super.key});
@@ -36,15 +37,20 @@ class _MyHomeState extends State<MyHome> {
           ),
         ),
         child: SafeArea(
+          top: false,
           bottom: false,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Container(
-                padding: const EdgeInsets.all(20),
+                height: (height <= 500) ? 0.3 * height : 0.2 * height,
+                padding: const EdgeInsets.only(
+                  left: 20,
+                ),
                 alignment: Alignment.centerLeft,
-                child: const Text(
+                child: const AutoSizeText(
                   "GreenVault",
+                  minFontSize: 10,
                 ),
               ),
               const Spacer(),
@@ -53,28 +59,45 @@ class _MyHomeState extends State<MyHome> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton.large(
-        onPressed: () => Navigator.of(context).push(_createRoute()),
-        backgroundColor: const Color.fromRGBO(
-          102,
-          220,
-          118,
-          1,
-        ),
-        child: SvgPicture.asset(
-          "lib/assets/GreenVault.svg",
-          color: Colors.white,
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: (height <= 500)
+          ? FloatingActionButton(
+              onPressed: () => Navigator.of(context).push(_createRoute()),
+              backgroundColor: const Color.fromRGBO(
+                102,
+                220,
+                118,
+                1,
+              ),
+              child: SvgPicture.asset(
+                "lib/assets/GreenVault.svg",
+                height: 40,
+                width: 40,
+                color: Colors.white,
+              ),
+            )
+          : FloatingActionButton.large(
+              onPressed: () => Navigator.of(context).push(_createRoute()),
+              backgroundColor: const Color.fromRGBO(
+                102,
+                220,
+                118,
+                1,
+              ),
+              child: SvgPicture.asset(
+                "lib/assets/GreenVault.svg",
+                color: Colors.white,
+              ),
+            ),
+      floatingActionButtonLocation: (height <= 500)
+          ? FloatingActionButtonLocation.endDocked
+          : FloatingActionButtonLocation.centerDocked,
     );
   }
 }
 
 Route _createRoute() {
   return PageRouteBuilder(
-    pageBuilder: (context, aninmation, secondaryAnimation) =>
-        const BluetoothPage(),
+    pageBuilder: (context, aninmation, secondaryAnimation) => const WifiPage(),
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
       return SlideTransition(
         position: animation.drive(
