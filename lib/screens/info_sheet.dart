@@ -1,8 +1,50 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:green_vault/screens/info_card.dart';
+import 'package:http/http.dart' as http;
 
-class InfoSheet extends StatelessWidget {
+class InfoSheet extends StatefulWidget {
   const InfoSheet({super.key});
+
+  @override
+  State<InfoSheet> createState() => _InfoSheetState();
+}
+
+class _InfoSheetState extends State<InfoSheet> {
+  double details = 0;
+  bool getDetails = false;
+  @override
+  void initState() {
+    super.initState();
+    callFunc();
+  }
+
+  fetchData() async {
+    try {
+      final response =
+          await http.get(Uri.parse("http://192.168.4.1/data_endpoint"));
+      if (response.statusCode == 200) {
+        print("Response from Node MCU: ${response.body}");
+        setState(() {
+          getDetails = true;
+          details = double.parse(response.body);
+        });
+      }
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  void callFunc() async {
+    Future.doWhile(() async {
+      await Future.delayed(const Duration(seconds: 5));
+      fetchData();
+      setState(() {});
+      return true;
+    });
+    return;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +95,7 @@ class InfoSheet extends StatelessWidget {
                     type: "Wet Waste",
                     height: 0.3 * height,
                     width: 0.8 * width,
-                    fill: 5,
+                    fill: details,
                   ),
                 ),
                 const Padding(
@@ -66,7 +108,7 @@ class InfoSheet extends StatelessWidget {
                     type: "Dry Waste",
                     height: 0.3 * height,
                     width: 0.8 * width,
-                    fill: 17,
+                    fill: 5,
                   ),
                 ),
               ],

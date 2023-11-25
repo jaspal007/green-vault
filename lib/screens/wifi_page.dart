@@ -1,5 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class WifiPage extends StatefulWidget {
   const WifiPage({super.key});
@@ -9,9 +10,38 @@ class WifiPage extends StatefulWidget {
 }
 
 class _WifiPageState extends State<WifiPage> {
+  String details = "";
+  bool getDetails = false;
   @override
   void initState() {
     super.initState();
+    callFunc();
+  }
+
+  fetchData() async {
+    try {
+      final response =
+          await http.get(Uri.parse("http://192.168.4.1/data_endpoint"));
+      if (response.statusCode == 200) {
+        print("Response from Node MCU: ${response.body}");
+        setState(() {
+          getDetails = true;
+          details = response.body;
+        });
+      }
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  void callFunc() async {
+    Future.doWhile(() async {
+      await Future.delayed(const Duration(seconds: 5));
+      fetchData();
+      setState(() {});
+      return true;
+    });
+    return;
   }
 
   @override
@@ -47,7 +77,7 @@ class _WifiPageState extends State<WifiPage> {
                   ),
                 )
               : TextButton(
-                  onPressed: (){},
+                  onPressed: () {},
                   child: Text(
                     "Scan",
                     style: const TextStyle().copyWith(
@@ -58,8 +88,7 @@ class _WifiPageState extends State<WifiPage> {
         ],
       ),
       body: RefreshIndicator.adaptive(
-        onRefresh: () async {
-        },
+        onRefresh: () async {},
         child: Container(
           color: Colors.white,
           child: Column(
@@ -76,6 +105,7 @@ class _WifiPageState extends State<WifiPage> {
                   maxFontSize: 20,
                 ),
               ),
+              (getDetails) ? Text(details) : Container(),
             ],
           ),
         ),
