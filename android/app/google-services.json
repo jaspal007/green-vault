@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "557520026727",
+    "project_id": "green-vault",
+    "storage_bucket": "green-vault.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:557520026727:android:b316edb482103cbd73a8c2",
+        "android_client_info": {
+          "package_name": "com.example.green_vault"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyATEmHgz2KnL-HU_0FP3UmjJXlml9eKff0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

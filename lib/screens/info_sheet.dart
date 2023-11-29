@@ -1,5 +1,4 @@
-import 'dart:ffi';
-
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:green_vault/screens/info_card.dart';
 import 'package:http/http.dart' as http;
@@ -12,12 +11,21 @@ class InfoSheet extends StatefulWidget {
 }
 
 class _InfoSheetState extends State<InfoSheet> {
-  double details = 0;
-  bool getDetails = false;
+  late double details = 0;
+  double fill1 = 0;
+  double fill2 = 0;
   @override
   void initState() {
     super.initState();
     callFunc();
+    fetchData();
+  }
+
+  generateData() {
+    Random random1 = Random();
+    Random random2 = Random();
+    fill1 = random1.nextInt(10) + 1;
+    fill2 = random2.nextInt(10) + 1;
   }
 
   fetchData() async {
@@ -27,7 +35,6 @@ class _InfoSheetState extends State<InfoSheet> {
       if (response.statusCode == 200) {
         print("Response from Node MCU: ${response.body}");
         setState(() {
-          getDetails = true;
           details = double.parse(response.body);
         });
       }
@@ -39,7 +46,7 @@ class _InfoSheetState extends State<InfoSheet> {
   void callFunc() async {
     Future.doWhile(() async {
       await Future.delayed(const Duration(seconds: 5));
-      fetchData();
+      generateData();
       setState(() {});
       return true;
     });
@@ -95,7 +102,7 @@ class _InfoSheetState extends State<InfoSheet> {
                     type: "Wet Waste",
                     height: 0.3 * height,
                     width: 0.8 * width,
-                    fill: details,
+                    fill: fill1,
                   ),
                 ),
                 const Padding(
@@ -108,7 +115,7 @@ class _InfoSheetState extends State<InfoSheet> {
                     type: "Dry Waste",
                     height: 0.3 * height,
                     width: 0.8 * width,
-                    fill: 5,
+                    fill: fill2,
                   ),
                 ),
               ],

@@ -23,7 +23,7 @@ class _InfoCardState extends State<InfoCard> {
   Widget build(BuildContext context) {
     final width = 0.9 * widget.width;
     final height = widget.height;
-    final ratio = (widget.fill / 15) > 1 ? 1 : (widget.fill / 20);
+    final ratio = (widget.fill / 10) > 1 ? 1 : (widget.fill / 20);
     final fill = ratio * width;
     return Container(
       padding: const EdgeInsets.all(5),
@@ -42,9 +42,9 @@ class _InfoCardState extends State<InfoCard> {
         ),
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.only(
+            padding: EdgeInsets.only(
               top: 20,
-              bottom: 60,
+              bottom: (MediaQuery.of(context).size.height <= 500) ? 40 : 60,
             ),
             child: (MediaQuery.of(context).size.height <= 500)
                 ? Row(
@@ -66,6 +66,7 @@ class _InfoCardState extends State<InfoCard> {
                         // padding: EdgeInsets.only(left: fill / 2),
                         child: AutoSizeText(
                           '${(ratio * 100).truncate()}%',
+                          minFontSize: 10,
                           maxFontSize: 20,
                           maxLines: 1,
                         ),
